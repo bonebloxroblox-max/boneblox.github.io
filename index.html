@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Colorful Portfolio</title>
+    
+    <!-- Using Tailwind CSS for super easy styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Playful Fonts from Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for the icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Custom config to make it feel super playful and match the vibe */
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f4f5f7;
+            background-image: radial-gradient(#d1d5db 2px, transparent 2px);
+            background-size: 40px 40px;
+        }
+        
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Fun bouncy hover effect for cards */
+        .hover-bounce {
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .hover-bounce:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        /* Animated Scrolling Wave for the banner bottom */
+        @keyframes wave-scroll {
+            0% { 
+                -webkit-mask-position: 0px 0;
+                mask-position: 0px 0;
+            }
+            100% { 
+                /* Moves exactly one wave length (800px) to loop perfectly */
+                -webkit-mask-position: 800px 0;
+                mask-position: 800px 0;
+            }
+        }
+        .scrolling-wave-bottom {
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0,20 Q25,0 50,20 T100,20 L100,100 L0,100 Z' fill='black'/%3E%3C/svg%3E");
+            -webkit-mask-size: 800px 100%;
+            -webkit-mask-repeat: repeat-x;
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0,20 Q25,0 50,20 T100,20 L100,100 L0,100 Z' fill='black'/%3E%3C/svg%3E");
+            mask-size: 800px 100%;
+            mask-repeat: repeat-x;
+            animation: wave-scroll 15s linear infinite;
+        }
+
+        /* Animated Pastel Rainbow Border WITH GLOW */
+        @keyframes pastel-scroll {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        .pastel-rainbow-border {
+            position: relative;
+            background: linear-gradient(90deg, 
+                #ffb3ba, #ffdfba, #ffffba, #baffc9, #bae1ff, #e0c3fc, #ffb3ba
+            );
+            background-size: 200% 200%;
+            animation: pastel-scroll 5s linear infinite;
+            z-index: 1;
+        }
+        
+        .pastel-rainbow-border::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            z-index: -1;
+            background: inherit;
+            background-size: inherit;
+            animation: inherit;
+            filter: blur(20px);
+            border-radius: inherit;
+            opacity: 0.85;
+        }
+
+        /* Clean up the default arrows for our new dropdowns */
+        .dropdown-summary::-webkit-details-marker {
+            display: none;
+        }
+        .dropdown-summary {
+            list-style: none;
+        }
+
+        /* Bwump Animation for Modal */
+        @keyframes bwump {
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.05); opacity: 1; }
+            80% { transform: scale(0.95); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-bwump {
+            animation: bwump 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Make the rainbow clip exactly to the logo shape */
+        .banner-rainbow-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, 
+                #ffb3ba, #ffdfba, #ffffba, #baffc9, #bae1ff, #e0c3fc, #ffb3ba
+            );
+            background-size: 200% 200%;
+            animation: pastel-scroll 5s linear infinite;
+            
+            /* The image mask */
+            -webkit-mask-image: url('https://i.imgur.com/y2mLGrB.png');
+            -webkit-mask-size: 100% 100%;
+            -webkit-mask-repeat: no-repeat;
+            mask-image: url('https://i.imgur.com/y2mLGrB.png');
+            mask-size: 100% 100%;
+            mask-repeat: no-repeat;
+            
+            /* Dyes the white logo with the rainbow colors! */
+            mix-blend-mode: multiply;
+            opacity: 0.85; 
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen pb-20">
+
+    <!-- AUDIO MUTE/UNMUTE BUTTON -->
+    <button id="audioToggleBtn" class="fixed top-6 right-6 z-[110] bg-white/90 backdrop-blur-sm p-3 rounded-2xl shadow-xl border border-gray-200 text-gray-700 hover:text-orange-500 hover:scale-110 transition-all focus:outline-none">
+        <!-- Unmuted Icon (Default) -->
+        <svg id="iconUnmuted" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7">
+            <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 001.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.56.276 2.56-1.06V4.06zM18.584 5.106a.75.75 0 011.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 11-1.06-1.06 8.25 8.25 0 000-11.668.75.75 0 010-1.06z" />
+            <path d="M15.932 7.757a.75.75 0 011.061 0 4.5 4.5 0 010 6.364.75.75 0 01-1.06-1.06 3 3 0 000-4.243.75.75 0 010-1.061z" />
+        </svg>
+        <!-- Muted Icon (Hidden by default) -->
+        <svg id="iconMuted" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 hidden text-gray-400">
+            <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 001.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.56.276 2.56-1.06V4.06zM17.78 9.22a.75.75 0 10-1.06 1.06L18.44 12l-1.72 1.72a.75.75 0 001.06 1.06l1.72-1.72 1.72 1.72a.75.75 0 101.06-1.06L20.56 12l1.72-1.72a.75.75 0 00-1.06-1.06l-1.72 1.72-1.72-1.72z" />
+        </svg>
+    </button>
+
+    <!-- HEADER BANNER & LOGO -->
+    <div class="relative w-full mb-20">
+        <!-- Banner Background & Wave Clip Area -->
+        <div class="relative w-full h-[300px] sm:h-[400px] overflow-hidden bg-sky-200">
+            <!-- Background image -->
+            <img src="https://i.imgur.com/h4AqNye.png" alt="Header Banner" class="absolute inset-0 w-full h-full object-cover">
+            
+            <!-- Centered Logo -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none p-4 z-10">
+                <div class="relative w-full max-w-3xl">
+                    <img src="https://i.imgur.com/y2mLGrB.png" alt="Boneblox Logo" class="w-full h-auto drop-shadow-xl">
+                    <!-- Rainbow overlay for logo -->
+                    <div class="banner-rainbow-overlay"></div>
+                </div>
+            </div>
+
+            <!-- Scrolling Wave Mask (Bottom Edge) -->
+            <!-- This matches the body background color perfectly to create the cutout illusion -->
+            <div class="absolute bottom-0 left-0 w-full h-12 sm:h-24 bg-[#f4f5f7] scrolling-wave-bottom z-20"></div>
+        </div>
+
+        <!-- Profile Icon overlapping the bottom -->
+        <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-30">
+            <div class="w-28 h-28 sm:w-32 sm:h-32 bg-white rounded-3xl shadow-xl p-1.5 rotate-3 hover:rotate-0 transition-transform duration-300">
+                <img src="https://i.imgur.com/XQGU1Kp.png" alt="My Profile Icon" class="w-full h-full object-cover rounded-2xl">
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- BIO & LINKS SECTION -->
+        <div class="text-center mt-8 mb-12">
+            
+            <!-- Top Text Links -->
+            <div class="flex flex-wrap justify-center gap-4 text-sm sm:text-base font-bold text-orange-500 mb-6">
+                <a href="https://www.youtube.com/@bonesblox" target="_blank" class="hover:text-orange-600 hover:underline flex items-center gap-1"><i class="fa-brands fa-youtube"></i> YouTube</a>
+                <a href="https://discord.gg/ApmwnyGhmn" target="_blank" class="hover:text-orange-600 hover:underline flex items-center gap-1"><i class="fa-brands fa-discord"></i> Discord Server</a>
+                <a href="https://www.roblox.com/users/87768826/profile" target="_blank" class="hover:text-orange-600 hover:underline flex items-center gap-1">
+                    <!-- Little custom Roblox Icon for the text link -->
+                    <svg fill="currentColor" width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.441 0L0 20.252l18.559 4.103L24 4.102 5.441 0zm7.151 14.86c-1.428-.316-2.327-1.728-2.01-3.155.316-1.427 1.728-2.327 3.155-2.01 1.427.316 2.327 1.728 2.01 3.155-.315 1.427-1.728 2.327-3.155 2.01z"/></svg>
+                    Roblox
+                </a>
+            </div>
+
+            <p class="max-w-2xl mx-auto text-lg sm:text-xl text-gray-700 leading-relaxed font-medium px-4">
+                Hey, I'm <span class="font-bold text-gray-900">Boneblox</span>! I am an <span class="text-green-500 font-bold">environmental artist</span> with <strong>11 years of experience</strong>. I make <strong class="text-blue-500">super cool stuff</strong>, mostly for fun :) you can check out my full portfolio below.<br>
+                If u're interested in hiring me for custom work, feel free to reach out!
+            </p>
+
+            <!-- Blocky Social Icons -->
+            <div class="flex justify-center flex-wrap gap-3 mt-8">
+                <!-- YouTube -->
+                <a href="https://www.youtube.com/@bonesblox" target="_blank" class="w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center text-2xl shadow-sm hover:bg-red-600 hover:-translate-y-1 transition-all">
+                    <i class="fa-brands fa-youtube"></i>
+                </a>
+                <!-- Twitter/X -->
+                <a href="https://x.com/boneblox" target="_blank" class="w-12 h-12 bg-sky-400 text-white rounded-xl flex items-center justify-center text-2xl shadow-sm hover:bg-sky-500 hover:-translate-y-1 transition-all">
+                    <i class="fa-brands fa-twitter"></i>
+                </a>
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/jupichii/?hl=bg" target="_blank" class="w-12 h-12 bg-pink-500 text-white rounded-xl flex items-center justify-center text-2xl shadow-sm hover:bg-pink-600 hover:-translate-y-1 transition-all">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+                <!-- Discord -->
+                <a href="https://discord.gg/ApmwnyGhmn" target="_blank" class="w-12 h-12 bg-purple-500 text-white rounded-xl flex items-center justify-center text-2xl shadow-sm hover:bg-purple-600 hover:-translate-y-1 transition-all">
+                    <i class="fa-brands fa-discord"></i>
+                </a>
+                <!-- Roblox (Custom SVG Icon) -->
+                <a href="https://www.roblox.com/users/87768826/profile" target="_blank" class="w-12 h-12 bg-gray-800 text-white rounded-xl flex items-center justify-center text-2xl shadow-sm hover:bg-gray-900 hover:-translate-y-1 transition-all">
+                    <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.441 0L0 20.252l18.559 4.103L24 4.102 5.441 0zm7.151 14.86c-1.428-.316-2.327-1.728-2.01-3.155.316-1.427 1.728-2.327 3.155-2.01 1.427.316 2.327 1.728 2.01 3.155-.315 1.427-1.728 2.327-3.155 2.01z"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="text-center mb-10">
+            <p class="text-gray-600 font-semibold text-lg">You can <a href="https://www.youtube.com/@bonesblox" target="_blank" class="text-orange-500 hover:underline">Support me on YouTube to fund my future projects!</a></p>
+        </div>
+
+        <!-- HIGHLIGHTED SHOWCASE SECTION -->
+        <div class="flex flex-col gap-8 mb-12">
+            
+            <!-- NEW PROJECT -->
+            <div class="w-full relative group cursor-pointer hover-bounce rounded-3xl p-2 pastel-rainbow-border shadow-xl">
+                <div class="absolute top-6 left-6 z-10 flex gap-2">
+                    <span class="bg-pink-600 text-white font-heading font-bold px-3 py-1 rounded-md text-sm shadow-md">NEW</span>
+                </div>
+                
+                <div class="w-full h-64 sm:h-80 bg-gray-900 rounded-2xl overflow-hidden relative">
+                    <img src="https://placehold.co/1000x400/2d3748/ffffff?text=My+Newest+Project" alt="New Project" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity">
+                </div>
+            </div>
+
+            <!-- FEATURED PROJECT -->
+            <div class="w-full relative group cursor-pointer hover-bounce rounded-3xl p-2 pastel-rainbow-border shadow-xl">
+                <div class="absolute top-6 left-6 z-10 flex gap-2">
+                    <span class="bg-yellow-400 text-gray-900 font-heading font-bold px-3 py-1 rounded-md text-sm shadow-md">FEATURED</span>
+                </div>
+                
+                <!-- Swapped to aspect-video (16:9) to fit the new image perfectly and added your discord link! -->
+                <div class="w-full aspect-video bg-gray-900 rounded-2xl overflow-hidden relative">
+                    <img src="https://media.discordapp.net/attachments/1434622756489531534/1489222752677396511/Aniforce5_nologo.png?ex=6a03b584&amp;is=6a026404&amp;hm=4560bff51bcb9f061c1aad0e9622e09f244094a8c09f986e5b46f2baf1d9b4c9&amp;=&amp;format=webp&amp;quality=lossless&amp;width=1603&amp;height=902" alt="Featured Project" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PORTFOLIO GRID -->
+        <div class="flex items-center justify-between mb-6 border-b-2 border-gray-200 pb-2">
+            <h2 class="text-2xl font-heading text-gray-800">My Portfolio Work</h2>
+            <span class="text-gray-500 font-medium text-sm">Check everything out!</span>
+        </div>
+
+        <!-- DROPDOWN SECTIONS WRAPPER -->
+        <div class="flex flex-col gap-6">
+
+            <!-- SERIES 1 DROPDOWN (Open by default) -->
+            <details class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden group" open>
+                <summary class="font-heading text-xl font-bold text-gray-800 p-5 cursor-pointer hover:bg-gray-50 transition-colors flex justify-between items-center dropdown-summary select-none">
+                    Series 1
+                    <!-- This icon automatically rotates when the details tag is open thanks to group-open:rotate-180 -->
+                    <i class="fa-solid fa-chevron-down text-gray-400 transform transition-transform group-open:rotate-180"></i>
+                </summary>
+                
+                <div class="p-6 bg-gray-50 border-t border-gray-100">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- ITEMS 1-6 -->
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-pink-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/ff9a9e/ffffff?text=Image+1" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-blue-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/a1c4fd/ffffff?text=Image+2" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-green-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/d4fc79/333333?text=Image+3" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-yellow-400 text-gray-900 font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/fbc2eb/ffffff?text=Image+4" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-purple-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/e0c3fc/ffffff?text=Image+5" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-orange-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/ffdfba/333333?text=Image+6" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- SERIES 2 DROPDOWN -->
+            <details class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden group">
+                <summary class="font-heading text-xl font-bold text-gray-800 p-5 cursor-pointer hover:bg-gray-50 transition-colors flex justify-between items-center dropdown-summary select-none">
+                    Series 2
+                    <i class="fa-solid fa-chevron-down text-gray-400 transform transition-transform group-open:rotate-180"></i>
+                </summary>
+                
+                <div class="p-6 bg-gray-50 border-t border-gray-100">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- ITEMS 1-6 -->
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-pink-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/ff9a9e/ffffff?text=Image+1" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-blue-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/a1c4fd/ffffff?text=Image+2" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-green-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/d4fc79/333333?text=Image+3" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-yellow-400 text-gray-900 font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/fbc2eb/ffffff?text=Image+4" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-purple-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/e0c3fc/ffffff?text=Image+5" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-sm hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-orange-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/ffdfba/333333?text=Image+6" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- SERIES 3 DROPDOWN -->
+            <details class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden group">
+                <summary class="font-heading text-xl font-bold text-gray-800 p-5 cursor-pointer hover:bg-gray-50 transition-colors flex justify-between items-center dropdown-summary select-none">
+                    Series 3
+                    <i class="fa-solid fa-chevron-down text-gray-400 transform transition-transform group-open:rotate-180"></i>
+                </summary>
+                
+                <div class="p-6 bg-gray-50 border-t border-gray-100">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- ITEMS 1-3 (Shortened placeholders for the fix) -->
+                        <div class="bg-white rounded-2xl p-3 shadow-md hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-pink-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/ff9a9e/ffffff?text=Image+1" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-md hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-blue-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/a1c4fd/ffffff?text=Image+2" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                        <div class="bg-white rounded-2xl p-3 shadow-md hover-bounce cursor-pointer border border-gray-100">
+                            <div class="relative w-full h-56 rounded-xl overflow-hidden bg-gray-100 mb-3">
+                                <div class="absolute top-2 left-2 z-10"><span class="bg-green-500 text-white font-heading text-xs font-bold px-2 py-1 rounded shadow">Template</span></div>
+                                <img src="https://placehold.co/600x400/d4fc79/333333?text=Image+3" alt="Template" class="w-full h-full object-cover">
+                            </div>
+                            <div class="px-2 pb-2"><h3 class="font-heading text-lg font-bold text-gray-800">Template</h3><p class="text-gray-500 text-sm font-medium">Description placeholder.</p></div>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+        </div> <!-- This properly closes the Dropdown Sections Wrapper! -->
+
+        <!-- COMMISSIONS / HIRING SECTION -->
+        <div class="mt-20 mb-12">
+            <div class="flex items-center justify-between mb-2 border-b-2 border-gray-200 pb-2">
+                <h2 class="text-2xl font-heading text-gray-800">Commission Me</h2>
+                <span class="text-gray-500 font-medium text-sm">Let's build something!</span>
+            </div>
+            
+            <!-- Legal/Jargon Note -->
+            <p class="text-center text-gray-500 text-sm max-w-3xl mx-auto mb-10 font-medium italic mt-4">
+                All prices in USD. Rates may be adjusted depending on the specific task at hand. Every commission is reviewed personally on a case-by-case basis (no automated reviewals). 
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+                
+                <!-- TIER 1 (Left) -->
+                <div class="bg-white rounded-3xl p-8 shadow-sm hover-bounce border border-gray-100 flex flex-col relative h-full">
+                    <div class="h-2 w-full bg-pink-400 absolute top-0 left-0 rounded-t-3xl"></div>
+                    <h3 class="font-heading text-2xl font-bold text-gray-800 mb-2 mt-2">Small Maps</h3>
+                    <p class="text-pink-500 font-bold text-4xl mb-4">$50<span class="text-lg text-gray-400 font-medium">+</span></p>
+                    <p class="text-gray-500 text-sm mb-6 flex-grow">Perfect for stage commissions, lobby environments, or when multiple maps are needed.</p>
+                    
+                    <ul class="text-sm text-gray-600 mb-8 space-y-4 flex-grow">
+                        <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mr-3 text-lg mt-0.5"></i> <span><strong>5 Maps minimum</strong>, 6th map free!</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mr-3 text-lg mt-0.5"></i> <span>Simple, highly optimized scene</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mr-3 text-lg mt-0.5"></i> <span>1 free revision</span></li>
+                    </ul>
+                    
+                    <a href="https://discord.gg/ApmwnyGhmn" target="_blank" class="block w-full text-center bg-gray-100 hover:bg-pink-500 hover:text-white text-gray-700 font-bold py-3.5 rounded-xl transition-all shadow-sm hover:shadow-md mt-auto">Request Small Maps</a>
+                </div>
+
+                <!-- TIER 3 (Middle / Featured) -->
+                <div class="w-full relative group cursor-pointer hover-bounce rounded-3xl p-1.5 pastel-rainbow-border shadow-xl transform md:-translate-y-4 h-full flex flex-col z-10">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white font-bold px-4 py-1.5 rounded-b-xl text-xs tracking-wider shadow-md z-20">STUDIO OPTION</div>
+                    
+                    <!-- Inner white background to block the rainbow inside -->
+                    <div class="bg-white rounded-[1.25rem] p-7 flex flex-col h-full relative z-10">
+                        <h3 class="font-heading text-2xl font-bold text-gray-800 mb-2 mt-5">Long Term / Custom</h3>
+                        <p class="text-gray-900 font-bold text-4xl mb-4">$500<span class="text-lg text-gray-400 font-medium">+ or %</span></p>
+                        <p class="text-gray-500 text-sm mb-4 flex-grow">Want to take me on long-term? This option is for heavy custom work with diverse tasks or dedicated studio positions.</p>
+                        
+                        <div class="bg-orange-50 rounded-lg p-3 border border-orange-100 mb-6 text-xs text-orange-800 leading-relaxed font-medium">
+                            <i class="fa-solid fa-circle-info mr-1"></i> Percentage cuts require a proven track record, upfront USD compensation, and an established project foundation. I will not work for % on a brand-new project.
+                        </div>
+
+                        <ul class="text-sm text-gray-600 mb-8 space-y-4 flex-grow">
+                            <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mr-3 text-lg mt-0.5"></i> <span>Large custom maps & full creative control</span></li>
+                            <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mr-3 text-lg mt-0.5"></i> <span>On-hands fixes & real-time revisions</span></li>
+                            <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mr-3 text-lg mt-0.5"></i> <span>Exclusive priority scheduling & support</span></li>
+                        </ul>
+                        
+                        <a href="https://discord.gg/ApmwnyGhmn" target="_blank" class="block w-full text-center bg-gray-900 hover:bg-black text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-lg mt-auto">Discuss Long Term</a>
+                    </div>
+                </div>
+
+                <!-- TIER 2 (Right) -->
+                <div class="bg-white rounded-3xl p-8 shadow-sm hover-bounce border border-gray-100 flex flex-col relative h-full">
+                    <div class="h-2 w-full bg-purple-400 absolute top-0 left-0 rounded-t-3xl"></div>
+                    <h3 class="font-heading text-2xl font-bold text-gray-800 mb-2 mt-2">Medium Maps</h3>
+                    <p class="text-purple-500 font-bold text-4xl mb-4">$150<span class="text-lg text-gray-400 font-medium">+</span></p>
+                    <p class="text-gray-500 text-sm mb-6 flex-grow">Perfect for FPS map layouts, horror game environments, and strategically dense areas.</p>
+                    
+                    <ul class="text-sm text-gray-600 mb-8 space-y-4 flex-grow">
+                        <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mr-3 text-lg mt-0.5"></i> <span><strong>Buy 3 maps</strong>, get the 4th free!</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-green-400 mr-3 text-lg mt-0.5"></i> <span>Strategic layouts, multiple routes & heavy planning on flank pathways</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-infinity text-blue-500 mr-2 text-lg mt-0.5"></i> <span>Infinite free revisions</span></li>
+                    </ul>
+                    
+                    <a href="https://discord.gg/ApmwnyGhmn" target="_blank" class="block w-full text-center bg-gray-100 hover:bg-purple-500 hover:text-white text-gray-700 font-bold py-3.5 rounded-xl transition-all shadow-sm hover:shadow-md mt-auto">Request Medium Maps</a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="mt-20 text-center text-gray-400 text-sm font-medium">
+        <p>© 2026 Boneblox. All rights reserved.</p>
+        <p class="mt-1">Thanks for dropping by!</p>
+    </footer>
+
+    <!-- IMAGE MODAL (Hidden by default) -->
+    <div id="imageModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity">
+        <!-- Close Button -->
+        <button id="closeModalBtn" class="absolute top-6 right-6 text-white hover:text-pink-400 transition-colors z-50 text-4xl focus:outline-none drop-shadow-md">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        
+        <!-- Modal Content -->
+        <div id="modalContent" class="relative max-w-5xl w-[90%] max-h-[90vh] flex items-center justify-center p-2">
+            <img id="modalImage" src="" alt="Expanded View" class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl">
+        </div>
+    </div>
+
+    <!-- Script to handle modal opening, closing, and UI Sounds -->
+    <script>
+        // --- CUSTOM SOUND ENGINE ---
+        // Using your exact provided .ogg files
+        const sfxHover = new Audio("UI-Hover.ogg"); 
+        sfxHover.volume = 0.2; 
+
+        const sfxClick = new Audio("UI-Click.ogg");
+        sfxClick.volume = 0.4;
+
+        const sfxOpen = new Audio("UI-Open.ogg");
+        sfxOpen.volume = 0.5;
+
+        const sfxClose = new Audio("UI-Close.ogg");
+        sfxClose.volume = 0.4;
+
+        // Background Music Setup
+        const bgMusic = new Audio("WebsiteBackground.ogg");
+        bgMusic.volume = 0.15; // Kept lower so it's a nice ambiance
+        bgMusic.loop = true;   // Loops continuously
+
+        let isMuted = false;
+        let musicStarted = false;
+
+        // Sound trigger function that respects the mute button
+        const playSound = (audioElement) => {
+            if (isMuted) return; // Don't play if muted
+            audioElement.currentTime = 0; 
+            audioElement.play().catch(err => { /* Browser blocked autoplay */ }); 
+        };
+
+        const playHover = () => playSound(sfxHover);
+        const playClick = () => playSound(sfxClick);
+        const playOpenSound = () => playSound(sfxOpen);
+        const playCloseSound = () => playSound(sfxClose);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- AUDIO TOGGLE LOGIC ---
+            const audioToggleBtn = document.getElementById('audioToggleBtn');
+            const iconUnmuted = document.getElementById('iconUnmuted');
+            const iconMuted = document.getElementById('iconMuted');
+
+            // Browsers block autoplay until the user interacts. 
+            // This function starts the background music on their first click anywhere on the site.
+            const startMusic = () => {
+                if (!musicStarted && !isMuted) {
+                    bgMusic.play().catch(err => { /* Ignore blocked plays */ });
+                    musicStarted = true;
+                }
+                // Once it starts, we don't need this event listener anymore
+                document.removeEventListener('click', startMusic);
+            };
+            document.addEventListener('click', startMusic);
+
+            // Mute Button Click Event
+            audioToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Stops this click from triggering the document background music click
+                isMuted = !isMuted;
+                
+                if (isMuted) {
+                    // Turn Off
+                    iconUnmuted.classList.add('hidden');
+                    iconMuted.classList.remove('hidden');
+                    bgMusic.pause();
+                } else {
+                    // Turn On
+                    iconMuted.classList.add('hidden');
+                    iconUnmuted.classList.remove('hidden');
+                    
+                    playClick(); // Play a nice pop so they know it's unmuted
+                    
+                    if (musicStarted) {
+                        bgMusic.play().catch(err => {});
+                    } else {
+                        // If they unmuted before clicking anywhere else on the page
+                        bgMusic.play().catch(err => {});
+                        musicStarted = true;
+                    }
+                }
+            });
+
+            // Attach sounds to all interactive elements (except the mute button itself)
+            const interactables = document.querySelectorAll('a, button:not(#audioToggleBtn), summary, .hover-bounce');
+            
+            interactables.forEach(el => {
+                el.addEventListener('mouseenter', playHover);
+                
+                // Don't attach standard click pop to project cards, because they have the special Open/Bwump sound!
+                if (!el.classList.contains('hover-bounce')) {
+                    el.addEventListener('mousedown', playClick);
+                }
+            });
+
+            // --- MODAL LOGIC ---
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalContent = document.getElementById('modalContent');
+            const closeBtn = document.getElementById('closeModalBtn');
+            
+            const projectCards = document.querySelectorAll('.hover-bounce');
+            
+            projectCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    playOpenSound(); // Play the specific UI-Open sound!
+
+                    const img = card.querySelector('img');
+                    if (img) {
+                        modalImg.src = img.src;
+                        modal.classList.remove('hidden');
+                        
+                        modalContent.classList.remove('animate-bwump');
+                        void modalContent.offsetWidth; 
+                        modalContent.classList.add('animate-bwump');
+                    }
+                });
+            });
+
+            const closeModal = () => {
+                playCloseSound(); // Play the specific UI-Close sound!
+                modal.classList.add('hidden');
+                setTimeout(() => { modalImg.src = ''; }, 200); 
+            };
+
+            // Close when u click the X
+            closeBtn.addEventListener('click', closeModal);
+            
+            // Close when u click anywhere in the blurred background area
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Close when u press the Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
